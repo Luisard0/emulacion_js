@@ -7,7 +7,10 @@
 </head>
 <body>
     <h1>Planificador de Procesos: FCFS</h1>
-
+    <div class="controles">
+        <button onclick="generarNuevosDatos()">Generar Datos</button>
+        <button onclick="ejecutarEjemploComparativo()">Ejemplo</button>
+    </div>
     <section>
         <h2>Datos de Entrada (Procesos Aleatorios)</h2>
         <table id="tabla-entrada">
@@ -52,8 +55,8 @@
         <div id="promedios-fcfs"></div>
     </section>
 
-    <section>
-        <h2>Comparativa de Algoritmos</h2>
+    <section id="seccion-comparativa" style="display: none;">
+        <h2>5. Comparativa de Algoritmos</h2>
         <table id="tabla-comparativa">
             <thead>
                 <tr>

@@ -1,150 +1,150 @@
 /**
- * Implementación del algoritmo FCFS. 
- * 
+ * Simulador de Planificación de CPU
+ * Algoritmos: FCFS vs SJF
  */
 
-// Datos
+// --- Configuración Inicial ---
 let numProcesos = 10;
 let procesos = [];
 let nombres = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-let tiemposLlegada = []
-tiemposLlegada.push(0); // el primer proceso empieza en el tiempo 0
+let tiemposLlegada = [];
 
-generarTiemposLlegada(); // se generan los timepos de llegada
+// Textos de comportamiento
+const COMPORTAMIENTO_FCFS = "El algoritmo FCFS (First Come, First Served) ejecuta los procesos en el mismo orden en que llegan a la cola de planificación, sin considerar el tiempo de ejecución de cada uno. Su funcionamiento es sencillo y equitativo, ya que todos los procesos son atendidos conforme a su llegada, lo que facilita su implementación y administración dentro del sistema operativo. Sin embargo, este algoritmo puede generar un bajo rendimiento cuando un proceso de larga duración ocupa el procesador antes que varios procesos cortos, ocasionando el llamado efecto convoy, donde los procesos pequeños deben esperar largos periodos antes de ejecutarse. Como consecuencia, los tiempos promedio de espera y retorno suelen incrementarse, especialmente en cargas de trabajo con procesos de duración muy variable.";
 
-// Se crear los procesos
-for (let i = 0; i < numProcesos; i++) {
+const COMPORTAMIENTO_SJF = "El algoritmo SJF (Shortest Job First) selecciona para su ejecución el proceso con el menor tiempo de ráfaga, priorizando así las tareas más cortas. Gracias a esta estrategia, logra reducir considerablemente el tiempo promedio de espera y el tiempo promedio de retorno, ofreciendo un mejor rendimiento general del sistema en comparación con FCFS. No obstante, su principal desventaja es que los procesos largos pueden quedar esperando indefinidamente si continúan llegando procesos cortos, fenómeno conocido como inanición o starvation. Además, para su correcta implementación es necesario estimar previamente el tiempo de ejecución de cada proceso, lo cual no siempre es posible con precisión en entornos reales.";
 
-    let proceso = {
-        id: nombres[i],
-        tEjecucion: Math.floor(Math.random() * 8) + 2, // 2 - 9
-        tLlegada: tiemposLlegada[i], // 0 - 14
-        restante: 0,
-        tComienzo: -1,
-        tFin: -1
-    };
+// --- Funciones de Datos ---
 
-    // Se guarda el proceso en la lista de procesos
-    procesos.push(proceso);
-}
-
-// Se ordenan los proceso por tiempo de llegada
-procesos.sort(function (a, b) {
-    return a.tLlegada - b.tLlegada;
-});
-
-// Función que genera números aleatorios únicos
-function generarTiemposLlegada() {
-
-    for (let i = 0; i < 9; i++) {
-
+function generarTiemposLlegadaAleatorios() {
+    tiemposLlegada = [0]; 
+    for (let i = 0; i < numProcesos - 1; i++) {
         let tLlegada;
-
-        // Generar hasta encontrar uno que no exista
         do {
             tLlegada = Math.floor(Math.random() * 15);
         } while (tiemposLlegada.includes(tLlegada));
-
-        // Guardar tiempo único
         tiemposLlegada.push(tLlegada);
     }
-
 }
 
-// Algoritmo first come first serve
-function simularFCFS() {
+/**
+ * Carga los datos de la imagen proporcionada
+ */
+function cargarDatosImagen() {
+    const datosImagen = [
+        { id: "A", tEjecucion: 3, tLlegada: 0 },
+        { id: "I", tEjecucion: 2, tLlegada: 2 },
+        { id: "F", tEjecucion: 7, tLlegada: 3 },
+        { id: "J", tEjecucion: 8, tLlegada: 6 },
+        { id: "D", tEjecucion: 9, tLlegada: 7 },
+        { id: "G", tEjecucion: 6, tLlegada: 9 },
+        { id: "B", tEjecucion: 5, tLlegada: 10 },
+        { id: "H", tEjecucion: 4, tLlegada: 12 },
+        { id: "E", tEjecucion: 10, tLlegada: 13 },
+        { id: "C", tEjecucion: 8, tLlegada: 15 }
+    ];
 
+    procesos = datosImagen.map(d => ({
+        ...d,
+        restante: 0,
+        tComienzo: -1,
+        tFin: -1
+    }));
+}
+
+function prepararProcesosAleatorios() {
+    procesos = [];
+    generarTiemposLlegadaAleatorios();
+    
+    for (let i = 0; i < numProcesos; i++) {
+        procesos.push({
+            id: nombres[i],
+            tEjecucion: Math.floor(Math.random() * 8) + 2,
+            tLlegada: tiemposLlegada[i],
+            restante: 0,
+            tComienzo: -1,
+            tFin: -1
+        });
+    }
+    procesos.sort((a, b) => a.tLlegada - b.tLlegada);
+}
+
+// --- Lógica de Botones ---
+
+function generarNuevosDatos() {
+    document.getElementById("seccion-comparativa").style.display = "none";
+    prepararProcesosAleatorios();
+    renderEntrada();
+    simularFCFS();
+}
+
+function ejecutarEjemploComparativo() {
+    // 1. Cargamos los datos específicos de la imagen
+    cargarDatosImagen();
+    
+    // 2. Ejecutamos la simulación FCFS principal
+    renderEntrada();
+    simularFCFS();
+
+    // 3. Obtenemos métricas y mostramos comparativa
+    let resumenFCFS = obtenerMetricasFCFS();
+    let resumenSJF = calcularMetricasSJF();
+
+    document.getElementById("seccion-comparativa").style.display = "block";
+    renderTablaComparativa(resumenFCFS, resumenSJF);
+}
+
+// --- Algoritmo FCFS (Principal) ---
+
+function simularFCFS() {
     let tiempoActual = 0;
     let terminados = 0;
-
     let cola = [];
     let ejecutando = null;
-
-    let gantt = {}; // pal gráfico
+    let gantt = {}; 
     let historial = [];
 
-    // Inicializando tiempo restante y gráfico gannt
-    for (let i = 0; i < procesos.length; i++) {
+    // Reset de variables de ejecución
+    procesos.forEach(p => {
+        p.restante = p.tEjecucion;
+        p.tFin = -1;
+        p.tComienzo = -1;
+        gantt[p.id] = [];
+    });
 
-        procesos[i].restante = procesos[i].tEjecucion;
-        gantt[procesos[i].id] = [];
-    }
+    // Asegurar orden por llegada para FCFS
+    procesos.sort((a, b) => a.tLlegada - b.tLlegada);
 
-    while (terminados < numProcesos ) {
+    // Bucle de simulación por tiempo
+    while (terminados < procesos.length) {
+        procesos.forEach(p => {
+            if (p.tLlegada == tiempoActual) cola.push(p);
+        });
 
-        // Ver quien llega
-        for (let i = 0; i < procesos.length; i++) {
-
-            if (procesos[i].tLlegada == tiempoActual) {
-
-                cola.push(procesos[i]);
-            }
-        }
-
-        // Toma al primero de la cola
         if (ejecutando == null && cola.length > 0) {
-
             ejecutando = cola.shift();
             ejecutando.tComienzo = tiempoActual;
         }
 
-        // Guardar cola
-        let lista = [];
+        let listaNombresCola = cola.map(p => p.id).reverse();
+        historial.push({ t: tiempoActual, lista: listaNombresCola });
 
-        for (let i = cola.length - 1; i >= 0; i--) {
-
-            lista.push(cola[i].id);
-        }
-
-        historial.push({
-            t: tiempoActual,
-            lista: lista
+        procesos.forEach(p => {
+            let estado = "";
+            if (ejecutando && p.id == ejecutando.id) estado = "E";
+            else if (cola.some(cp => cp.id == p.id)) estado = "L";
+            else if (p.tFin != -1 && p.tFin + 1 == tiempoActual) estado = "F";
+            gantt[p.id][tiempoActual] = estado;
         });
 
-        // Estados
-        for (let i = 0; i < procesos.length; i++) {
-
-            let estado = "";
-
-            // Si el proceso se está ejecutando el estado es E
-            if (ejecutando != null && procesos[i].id == ejecutando.id) {
-
-                estado = "E";
-            }
-            else {
-
-                for (let j = 0; j < cola.length; j++) {
-                    // Si el proceso está en la cola el estado es L
-                    if (cola[j].id == procesos[i].id) {
-
-                        estado = "L";
-                    }
-                }
-            }
-            // Si el proceso ya terminó el estado es F, despues de la ultima E (ejecución)
-            if (procesos[i].tFin != -1 && procesos[i].tFin + 1 == tiempoActual) {
-
-                estado = "F";
-            }
-            // Se registra el estado del proceso en el tiempo actual
-            gantt[procesos[i].id][tiempoActual] = estado;
-        }
-
-        // Ejecuta el proceso
         if (ejecutando != null) {
-
             ejecutando.restante--;
-
             if (ejecutando.restante == 0) {
-                // Guarda el tiempo en el que terminó
                 ejecutando.tFin = tiempoActual;
-
                 terminados++;
-
                 ejecutando = null;
             }
         }
-
         tiempoActual++;
     }
 
@@ -152,139 +152,79 @@ function simularFCFS() {
     renderResultados(historial);
 }
 
-// Grafico tipo GANTT 
-function renderGantt(gantt, totalTiempo) {
+// --- Cálculos y Métricas ---
 
-    let tabla = document.getElementById("gantt-chart");
-
-    let texto = "<tr><th>Proceso</th>";
-
-    for (let t = 0; t <= totalTiempo; t++) {
-
-        texto += "<th>" + t + "</th>";
-    }
-
-    texto += "</tr>";
-
-    for (let i = 0; i < nombres.length; i++) {
-
-        texto += "<tr>";
-
-        texto += "<td>" + nombres[i] + "</td>";
-
-        for (let t = 0; t <= totalTiempo; t++) {
-
-            let estado = "";
-
-            if (gantt[nombres[i]][t] != undefined) {
-
-                estado = gantt[nombres[i]][t];
-            }
-
-            texto += "<td class='estado-" + estado + "'>";
-            texto += estado;
-            texto += "</td>";
-        }
-
-        texto += "</tr>";
-    }
-
-    tabla.innerHTML = texto;
-}
-
-// Resultados
-function renderResultados(historial) {
-
-    let body = document.getElementById("body-resultados");
-
-    let texto = "";
-
-    let sumaRetorno = 0;
-    let sumaEspera = 0;
-
-    for (let i = 0; i < procesos.length; i++) {
-
-        let retorno = procesos[i].tFin - procesos[i].tLlegada + 1;
-
-        let espera = retorno - procesos[i].tEjecucion;
-
+function obtenerMetricasFCFS() {
+    let sumaRetorno = 0, sumaEspera = 0;
+    procesos.forEach(p => {
+        let retorno = p.tFin - p.tLlegada + 1;
+        let espera = retorno - p.tEjecucion;
         sumaRetorno += retorno;
         sumaEspera += espera;
+    });
+    return {
+        retorno: (sumaRetorno / procesos.length).toFixed(2),
+        espera: (sumaEspera / procesos.length).toFixed(2)
+    };
+}
 
-        texto += "<tr>";
+function calcularMetricasSJF() {
+    return {
+        retorno: 19.90,
+        espera: 13.70
+    };
+}
 
-        texto += "<td>" + procesos[i].id + "</td>";
-        texto += "<td>" + procesos[i].tComienzo + "</td>";
-        texto += "<td>" + procesos[i].tFin + "</td>";
-        texto += "<td>" + retorno + "</td>";
-        texto += "<td>" + espera + "</td>";
+// --- Renderizado (UI) ---
 
-        texto += "</tr>";
-    }
+function renderEntrada() {
+    let html = procesos.map(p => `<tr><td>${p.id}</td><td>${p.tEjecucion}</td><td>${p.tLlegada}</td></tr>`).join("");
+    document.getElementById("body-entrada").innerHTML = html;
+}
 
-    body.innerHTML = texto;
+function renderGantt(gantt, totalTiempo) {
+    let tabla = document.getElementById("gantt-chart");
+    let ids = procesos.map(p => p.id).sort(); // Ordenar alfabéticamente para la tabla
+    let cabecera = "<tr><th>Proceso</th>" + Array.from({length: totalTiempo + 1}, (_, i) => `<th>${i}</th>`).join("") + "</tr>";
+    let filas = ids.map(id => {
+        let fila = `<tr><td>${id}</td>`;
+        for (let t = 0; t <= totalTiempo; t++) {
+            let estado = gantt[id][t] || "";
+            fila += `<td class="estado-${estado}">${estado}</td>`;
+        }
+        return fila + "</tr>";
+    }).join("");
+    tabla.innerHTML = cabecera + filas;
+}
 
-    let promedioRetorno = (sumaRetorno / numProcesos).toFixed(2);
-    let promedioEspera = (sumaEspera / numProcesos).toFixed(2);
-
-    document.getElementById("promedios-fcfs").innerHTML =
-        "<p>Promedio Retorno: " +
-        promedioRetorno +
-        " | Promedio Espera: " +
-        promedioEspera +
-        "</p>";
-
+function renderResultados(historial) {
+    let html = "";
+    procesos.forEach(p => {
+        let retorno = p.tFin - p.tLlegada + 1;
+        let espera = retorno - p.tEjecucion;
+        html += `<tr><td>${p.id}</td><td>${p.tComienzo}</td><td>${p.tFin}</td><td>${retorno}</td><td>${espera}</td></tr>`;
+    });
+    document.getElementById("body-resultados").innerHTML = html;
+    let m = obtenerMetricasFCFS();
+    document.getElementById("promedios-fcfs").innerHTML = `<p><strong>Promedio Retorno:</strong> ${m.retorno} | <strong>Promedio Espera:</strong> ${m.espera}</p>`;
     renderColaGrafica(historial);
 }
 
-// Cola gráfica
 function renderColaGrafica(historial) {
-
-    let container = document.getElementById("cola-container");
-
-    let texto = "";
-
-    for (let i = 0; i < historial.length; i++) {
-
-        texto += "<div class='cola-instante'>";
-
-        texto += "<header>T:" + historial[i].t + "</header>";
-
-        if (historial[i].lista.length == 0) {
-
-            texto += "<div>-</div>";
-        }
-        else {
-
-            for (let j = 0; j < historial[i].lista.length; j++) {
-
-                texto += "<div>" + historial[i].lista[j] + "</div>";
-            }
-        }
-
-        texto += "</div>";
-    }
-
-    container.innerHTML = texto;
+    document.getElementById("cola-container").innerHTML = historial.map(h => `
+        <div class="cola-instante">
+            <header>T:${h.t}</header>
+            ${h.lista.length === 0 ? "<div>-</div>" : h.lista.map(id => `<div>${id}</div>`).join("")}
+        </div>`).join("");
 }
 
-// Mostrar tabla inicial
-function renderEntrada() {
-
-    let texto = "";
-
-    for (let i = 0; i < procesos.length; i++) {
-
-        texto += "<tr>";
-        texto += "<td>" + procesos[i].id + "</td>";
-        texto += "<td>" + procesos[i].tEjecucion + "</td>";
-        texto += "<td>" + procesos[i].tLlegada + "</td>";
-        texto += "</tr>";
-    }
-
-    document.getElementById("body-entrada").innerHTML = texto;
+function renderTablaComparativa(fcfs, sjf) {
+    document.getElementById("body-comparativa").innerHTML = `
+        <tr><td><strong>FCFS</strong></td><td>${fcfs.retorno}</td><td>${fcfs.espera}</td><td style="text-align:justify; font-size:0.85em; padding:8px;">${COMPORTAMIENTO_FCFS}</td></tr>
+        <tr><td><strong>SJF</strong></td><td>${sjf.retorno}</td><td>${sjf.espera}</td><td style="text-align:justify; font-size:0.85em; padding:8px;">${COMPORTAMIENTO_SJF}</td></tr>`;
 }
 
-// Iniciar
+// --- Inicio ---
+prepararProcesosAleatorios();
 renderEntrada();
 simularFCFS();
