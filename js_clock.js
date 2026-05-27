@@ -5,9 +5,7 @@
  * @param {number} duracionTiempo -paos de la simulacion 10 a 70
  * @param {Array} secuenciaDemanda -secuencia fijada opcional del ejemplo en clase
 */
-/**
- * Lógica del Algoritmo Clock (Segunda Oportunidad) para Gestión de Memoria
- */
+// Función principal para correr el algoritmo de reemplazo de páginas Clock
 // Función principal para correr el algoritmo de reemplazo de páginas Clock
 function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenciaDemanda = null) {
 
@@ -15,17 +13,14 @@ function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenc
     if (secuenciaDemanda == null) {
         secuenciaDemanda = [];
         for (let i = 0; i < duracionTiempo; i++) {
-            // Elige una página al azar desde 0 hasta el límite de procesos menos 1
             let paginaAleatoria = Math.floor(Math.random() * numProcesos);
             secuenciaDemanda.push(paginaAleatoria);
         }
     } else {
-        // Si usamos los datos precargados, el tiempo se adapta al tamaño de la lista
         duracionTiempo = secuenciaDemanda.length;
     }
 
     // Creamos los marcos de memoria inicialmente vacíos
-    // Cada posición adentro va a guardar: [Número de Página, Bit de Uso]
     let frames = [];
     for (let i = 0; i < numFrames; i++) {
         frames.push([null, 0]); // Iniciamos con null (vacío) y el bit en 0
@@ -39,6 +34,7 @@ function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenc
     for (let t = 0; t < duracionTiempo; t++) {
         let paginaSolicitada = secuenciaDemanda[t]; // La página que se pide en este instante
         let huboFallo = false; // Bandera para saber si se activa el fallo o no
+        let marcoApuntadorGuardado = -1; // Nos ayuda a saber en qué fila pintar el asterisco
 
         // 1. Revisamos si la página ya está cargada en la memoria (Acierto / Hit)
         let encontrado = false;
@@ -55,51 +51,64 @@ function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenc
             huboFallo = true;
             totalFallos = totalFallos + 1; // Sumamos un fallo al total
 
-            // Ciclo para mover la manecilla del reloj y buscar un lugar según el Excel de clase
-            while (true) {
-                let paginaActual = frames[puntero][0];
-                let bitUso = frames[puntero][1];
-
-                // CASO A: Si el marco está completamente vacío, la página entra directo
-                // El puntero no avanza, se queda parado en este mismo marco que se llenó
-                if (paginaActual == null) {
-                    frames[puntero][0] = paginaSolicitada;
-                    frames[puntero][1] = 1; // Su bit inicia en 1
-                    break; // Rompemos el while porque ya se acomodó la página
+            // Buscamos de forma manual si todavía queda algún marco vacío (Llenado inicial)
+            let indiceVacio = -1;
+            for (let i = 0; i < numFrames; i++) {
+                if (frames[i][0] === null) {
+                    indiceVacio = i; // Guardamos la posición del primer hueco libre
+                    break; // Salimos del ciclo al encontrar el primero
                 }
+            }
 
-                // CASO B: Si el marco está lleno pero su bit es 0, se reemplaza la página vieja
-                // El puntero tampoco avanza aquí, se queda quieto apuntando al cambio
-                else if (bitUso == 0) {
-                    frames[puntero][0] = paginaSolicitada;
-                    frames[puntero][1] = 1; // Inicia en 1 de nuevo
-                    break; // Rompemos el while porque el reemplazo terminó
-                }
+            // Si encontramos un espacio vacío, metemos la página directamente ahí
+            if (indiceVacio !== -1) {
+                frames[indiceVacio][0] = paginaSolicitada;
+                frames[indiceVacio][1] = 1;
+                
+                // Mientras se esté llenando la memoria, no mostramos el asterisco en la tabla
+                marcoApuntadorGuardado = -1; 
+            } 
+            // Si ya NO hay espacios vacíos, la memoria está saturada: arranca el algoritmo del reloj
+            else {
+                let buscador = puntero;
 
-                // CASO C: Si el marco está lleno y su bit es 1, pierde su oportunidad
-                // El bit baja a 0 y la manecilla avanza al siguiente marco de forma circular
-                else {
-                    frames[puntero][1] = 0; // Baja el bit a 0
-                    puntero = (puntero + 1) % numFrames; // Avanza usando el residuo matemático
+                while (true) {
+                    let paginaActual = frames[buscador][0];
+                    let bitUso = frames[buscador][1];
+
+                    // Si el bit de uso es 0, encontramos a la víctima para reemplazarla
+                    if (bitUso == 0) {
+                        frames[buscador][0] = paginaSolicitada;
+                        frames[buscador][1] = 1; // Su bit vuelve a iniciar en 1
+                        
+                        marcoApuntadorGuardado = buscador; // Aquí se queda fijo el asterisco
+
+                        // La manecilla real del reloj avanza un cuadro de forma circular
+                        puntero = (buscador + 1) % numFrames;
+                        break; // Terminamos la búsqueda
+                    } 
+                    else {
+                        // Segunda oportunidad: bajamos el bit a 0 y avanzamos el buscador al siguiente marco
+                        frames[buscador][1] = 0;
+                        buscador = (buscador + 1) % numFrames;
+                    }
                 }
             }
         }
 
         // 3. Clonamos el estado de los marcos en este segundo para la tabla
-        // Esto evita que los cambios de los siguientes segundos borren el pasado
         let copiaMarcos = [];
         for (let i = 0; i < numFrames; i++) {
             copiaMarcos.push([frames[i][0], frames[i][1]]);
         }
 
         // 4. Guardamos los datos de este paso para mandarlos al HTML
-        // Si hubo fallo, el asterisco '*' se va a pintar exactamente en el marco donde paró el puntero
         historialPasos.push({
             tiempo: t + 1,
             demanda: paginaSolicitada,
             fallo: huboFallo ? "X" : "",
             estadoFrames: copiaMarcos,
-            punteroEn: huboFallo ? puntero : -1 // Si no hubo fallo se guarda -1 para no pintar asterisco
+            punteroEn: huboFallo ? marcoApuntadorGuardado : -1
         });
     }
 
