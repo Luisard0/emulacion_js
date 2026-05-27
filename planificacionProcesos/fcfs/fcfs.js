@@ -1,175 +1,269 @@
-// Programa que implementa el algoritmo first come first serve.
+/**
+ * Implementación del algoritmo FCFS. 
+ * 
+ */
 
-// Se declaran los procesos
-    // Cada proceso debe tener un tiempo de llegada y uno de ejecución
+// Datos
+let numProcesos = 10;
+let procesos = [];
+let nombres = ["A","B","C","D","E","F","G","H","I","J"];
 
-    // Se les asigna un tiempo de llegada
-    // Se les asigna un timepo de ejecución
+// Se crear los procesos
+for(let i = 0; i < numProcesos; i++){
 
-// Se ordenan los procesos en una cola
-
-// Se declara un contador para llevar un orden de ejecución
-
-// Bucle
-    // Se recorre la cola 
-
-
-// Se genera el gráfico
-
-
-// 1. Configuración y Generación de Datos
-const numProcesos = 10;
-const procesos = [];
-const nombres = "ABCDEFGHIJ".split("");
-
-for (let i = 0; i < numProcesos; i++) {
-    procesos.push({
+    let proceso = {
         id: nombres[i],
-        tEjecucion: Math.floor(Math.random() * 8) + 2, // 2-10
-        tLlegada: Math.floor(Math.random() * 15),     // 0-14
+        tEjecucion: Math.floor(Math.random() * 8) + 2,
+        tLlegada: Math.floor(Math.random() * 15),
         restante: 0,
         tComienzo: -1,
         tFin: -1
-    });
+    };
+
+    // Se guarda el proceso en la lista de procesos
+    procesos.push(proceso);
 }
 
-// Ordenar por llegada para mostrar en la tabla inicial
-procesos.sort((a, b) => a.tLlegada - b.tLlegada);
+// Se ordenan los proceso por tiempo de llegada
+procesos.sort(function(a,b){
+    return a.tLlegada - b.tLlegada;
+});
 
-function renderEntrada() {
-    const html = procesos.map(p => `<tr><td>${p.id}</td><td>${p.tEjecucion}</td><td>${p.tLlegada}</td></tr>`).join('');
-    document.getElementById('body-entrada').innerHTML = html;
-}
 
-// 2. Simulación FCFS
-function simularFCFS() {
+// Algoritmo first come first serve
+function simularFCFS(){
+
     let tiempoActual = 0;
-    let procesosTerminados = 0;
+    let terminados = 0;
+
     let cola = [];
-    let ejecucionActual = null;
-    let logGantt = {}; // { tiempo: { idProceso: estado } }
-    let historialColas = [];
+    let ejecutando = null;
 
-    // Inicializar logGantt
-    procesos.forEach(p => { p.restante = p.tEjecucion; logGantt[p.id] = []; });
+    let gantt = {}; // pal gráfico
+    let historial = [];
 
-    while (procesosTerminados < numProcesos || tiempoActual < 65) {
-        // 1. Ver quién llega en este tiempo
-        procesos.forEach(p => {
-            if (p.tLlegada === tiempoActual) cola.push(p);
-        });
+    // Inicializando tiempo restante y gráfico gannt
+    for(let i = 0; i < procesos.length; i++){
 
-        // 2. Si no hay nadie ejecutando, tomar el primero de la cola
-        if (!ejecucionActual && cola.length > 0) {
-            ejecucionActual = cola.shift();
-            ejecucionActual.tComienzo = tiempoActual;
+        procesos[i].restante = procesos[i].tEjecucion;
+        gantt[procesos[i].id] = [];
+    }
+
+    while(terminados < numProcesos){
+
+        // Ver quien llega
+        for(let i = 0; i < procesos.length; i++){
+            
+            if(procesos[i].tLlegada == tiempoActual){
+
+                cola.push(procesos[i]);
+            }
         }
 
-        // 3. Registrar estados en este instante
-        historialColas.push({ t: tiempoActual, lista: [...cola].reverse().map(p => p.id) });
+        // Toma al primero de la cola
+        if(ejecutando == null && cola.length > 0){
 
-        procesos.forEach(p => {
-            let estado = "";
-            if (ejecucionActual && p.id === ejecucionActual.id) {
-                estado = "E";
-            } else if (cola.find(c => c.id === p.id)) {
-                estado = "L";
-            } else if (p.tFin !== -1 && p.tFin + 1 === tiempoActual) {
-                estado = "F";
-            }
-            logGantt[p.id][tiempoActual] = estado;
+            ejecutando = cola.shift();
+            ejecutando.tComienzo = tiempoActual;
+        }
+
+        // Guardar cola
+        let lista = [];
+
+        for(let i = cola.length - 1; i >= 0; i--){
+
+            lista.push(cola[i].id);
+        }
+
+        historial.push({
+            t: tiempoActual,
+            lista: lista
         });
 
-        // 4. Avanzar ejecución
-        if (ejecucionActual) {
-            ejecucionActual.restante--;
-            if (ejecucionActual.restante === 0) {
-                ejecucionActual.tFin = tiempoActual;
-                procesosTerminados++;
-                ejecucionActual = null;
+        // Estados
+        for(let i = 0; i < procesos.length; i++){
+
+            let estado = "";
+
+            // Si el proceso se está ejecutando el estado es E
+            if(ejecutando != null && procesos[i].id == ejecutando.id){
+
+                estado = "E";
+            }
+            else{
+
+                for(let j = 0; j < cola.length; j++){
+                    // Si el proceso está en la cola el estado es L
+                    if(cola[j].id == procesos[i].id){
+
+                        estado = "L";
+                    }
+                }
+            }
+            // Si el proceso ya terminó el estado es F, despues de la ultima E (ejecución)
+            if(procesos[i].tFin != -1 && procesos[i].tFin + 1 == tiempoActual){
+
+                estado = "F";
+            }
+            // Se registra el estado del proceso en el tiempo actual
+            gantt[procesos[i].id][tiempoActual] = estado;
+        }
+
+        // Ejecuta el proceso
+        if(ejecutando != null){
+
+            ejecutando.restante--;
+
+            if(ejecutando.restante == 0){
+                // Guarda el tiempo en el que terminó
+                ejecutando.tFin = tiempoActual;
+
+                terminados++;
+
+                ejecutando = null;
             }
         }
 
         tiempoActual++;
-        if (procesosTerminados === numProcesos && !ejecucionActual) break;
     }
 
-    renderGantt(logGantt, tiempoActual);
-    renderResultados(historialColas);
+    renderGantt(gantt, tiempoActual);
+    renderResultados(historial);
 }
 
-function renderGantt(log, totalTiempo) {
-    const table = document.getElementById('gantt-chart');
-    let header = `<tr><th>Proceso</th>`;
-    for (let t = 0; t <= totalTiempo; t++) header += `<th>${t}</th>`;
-    header += `</tr>`;
+// Grafico tipo GANTT 
+function renderGantt(gantt, totalTiempo){
 
-    let rows = "";
-    nombres.forEach(id => {
-        rows += `<tr><td>${id}</td>`;
-        for (let t = 0; t <= totalTiempo; t++) {
-            const estado = log[id][t] || "";
-            rows += `<td class="estado-${estado}">${estado}</td>`;
+    let tabla = document.getElementById("gantt-chart");
+
+    let texto = "<tr><th>Proceso</th>";
+
+    for(let t = 0; t <= totalTiempo; t++){
+
+        texto += "<th>" + t + "</th>";
+    }
+
+    texto += "</tr>";
+
+    for(let i = 0; i < nombres.length; i++){
+
+        texto += "<tr>";
+
+        texto += "<td>" + nombres[i] + "</td>";
+
+        for(let t = 0; t <= totalTiempo; t++){
+
+            let estado = "";
+
+            if(gantt[nombres[i]][t] != undefined){
+
+                estado = gantt[nombres[i]][t];
+            }
+
+            texto += "<td class='estado-" + estado + "'>";
+            texto += estado;
+            texto += "</td>";
         }
-        rows += `</tr>`;
-    });
-    table.innerHTML = header + rows;
+
+        texto += "</tr>";
+    }
+
+    tabla.innerHTML = texto;
 }
 
-function renderResultados(historialColas) {
-    const body = document.getElementById('body-resultados');
-    let sumaRetorno = 0, sumaEspera = 0;
+// Resultados
+function renderResultados(historial){
 
-    const filas = procesos.map(p => {
-        const tRetorno = p.tFin - p.tLlegada + 1;
-        const tEspera = tRetorno - p.tEjecucion;
-        sumaRetorno += tRetorno; sumaEspera += tEspera;
+    let body = document.getElementById("body-resultados");
 
-        return `<tr>
-            <td>${p.id}</td><td>${p.tComienzo}</td><td>${p.tFin}</td>
-            <td>${tRetorno}</td><td>${tEspera}</td>
-        </tr>`;
-    }).join('');
+    let texto = "";
 
-    const medRetorno = (sumaRetorno / numProcesos).toFixed(2);
-    const medEspera = (sumaEspera / numProcesos).toFixed(2);
+    let sumaRetorno = 0;
+    let sumaEspera = 0;
 
-    body.innerHTML = filas;
-    document.getElementById('promedios-fcfs').innerHTML = `
-        <p>Promedio Retorno: ${medRetorno} | Promedio Espera: ${medEspera}</p>
-    `;
+    for(let i = 0; i < procesos.length; i++){
 
-    renderComparativa(medRetorno, medEspera);
-    renderColaGrafica(historialColas);
+        let retorno = procesos[i].tFin - procesos[i].tLlegada + 1;
+
+        let espera = retorno - procesos[i].tEjecucion;
+
+        sumaRetorno += retorno;
+        sumaEspera += espera;
+
+        texto += "<tr>";
+
+        texto += "<td>" + procesos[i].id + "</td>";
+        texto += "<td>" + procesos[i].tComienzo + "</td>";
+        texto += "<td>" + procesos[i].tFin + "</td>";
+        texto += "<td>" + retorno + "</td>";
+        texto += "<td>" + espera + "</td>";
+
+        texto += "</tr>";
+    }
+
+    body.innerHTML = texto;
+
+    let promedioRetorno = (sumaRetorno / numProcesos).toFixed(2);
+    let promedioEspera = (sumaEspera / numProcesos).toFixed(2);
+
+    document.getElementById("promedios-fcfs").innerHTML =
+        "<p>Promedio Retorno: " +
+        promedioRetorno +
+        " | Promedio Espera: " +
+        promedioEspera +
+        "</p>";
+
+    renderColaGrafica(historial);
 }
 
-function renderColaGrafica(historial) {
-    const container = document.getElementById('cola-container');
-    container.innerHTML = historial.map(h => `
-        <div class="cola-instante">
-            <header>T:${h.t}</header>
-            ${h.lista.map(id => `<div>${id}</div>`).join('') || '<div>-</div>'}
-        </div>
-    `).join('');
+// Cola gráfica
+function renderColaGrafica(historial){
+
+    let container = document.getElementById("cola-container");
+
+    let texto = "";
+
+    for(let i = 0; i < historial.length; i++){
+
+        texto += "<div class='cola-instante'>";
+
+        texto += "<header>T:" + historial[i].t + "</header>";
+
+        if(historial[i].lista.length == 0){
+
+            texto += "<div>-</div>";
+        }
+        else{
+
+            for(let j = 0; j < historial[i].lista.length; j++){
+
+                texto += "<div>" + historial[i].lista[j] + "</div>";
+            }
+        }
+
+        texto += "</div>";
+    }
+
+    container.innerHTML = texto;
 }
 
-function renderComparativa(fcfsRet, fcfsEsp) {
-    // Simulamos obtener datos de SJF (En una app real, SJF.js exportaría un objeto)
-    const sjfData = { retorno: (fcfsRet * 0.85).toFixed(2), espera: (fcfsEsp * 0.7).toFixed(2) }; 
+// Mostrar tabla inicial
+function renderEntrada(){
 
-    const html = `
-        <tr>
-            <td>FCFS</td><td>${fcfsRet}</td><td>${fcfsEsp}</td>
-            <td style="text-align:left; font-size:0.9em;">El algoritmo FCFS (First Come, First Served) ejecuta los procesos en el mismo orden en que llegan... (efecto convoy)</td>
-        </tr>
-        <tr>
-            <td>SJF</td><td>${sjfData.retorno}</td><td>${sjfData.espera}</td>
-            <td style="text-align:left; font-size:0.9em;">El algoritmo SJF (Shortest Job First) selecciona para su ejecución el proceso con el menor tiempo de ráfaga... (evita esperas largas)</td>
-        </tr>
-    `;
-    document.getElementById('body-comparativa').innerHTML = html;
+    let texto = "";
+
+    for(let i = 0; i < procesos.length; i++){
+
+        texto += "<tr>";
+        texto += "<td>" + procesos[i].id + "</td>";
+        texto += "<td>" + procesos[i].tEjecucion + "</td>";
+        texto += "<td>" + procesos[i].tLlegada + "</td>";
+        texto += "</tr>";
+    }
+
+    document.getElementById("body-entrada").innerHTML = texto;
 }
 
-// Inicializar
+// Iniciar
 renderEntrada();
 simularFCFS();
