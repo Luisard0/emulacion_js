@@ -6,15 +6,19 @@
 // Datos
 let numProcesos = 10;
 let procesos = [];
-let nombres = ["A","B","C","D","E","F","G","H","I","J"];
+let nombres = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+let tiemposLlegada = []
+tiemposLlegada.push(0); // el primer proceso empieza en el tiempo 0
+
+generarTiemposLlegada(); // se generan los timepos de llegada
 
 // Se crear los procesos
-for(let i = 0; i < numProcesos; i++){
+for (let i = 0; i < numProcesos; i++) {
 
     let proceso = {
         id: nombres[i],
-        tEjecucion: Math.floor(Math.random() * 8) + 2,
-        tLlegada: Math.floor(Math.random() * 15),
+        tEjecucion: Math.floor(Math.random() * 8) + 2, // 2 - 9
+        tLlegada: tiemposLlegada[i], // 0 - 14
         restante: 0,
         tComienzo: -1,
         tFin: -1
@@ -25,13 +29,30 @@ for(let i = 0; i < numProcesos; i++){
 }
 
 // Se ordenan los proceso por tiempo de llegada
-procesos.sort(function(a,b){
+procesos.sort(function (a, b) {
     return a.tLlegada - b.tLlegada;
 });
 
+// Función que genera números aleatorios únicos
+function generarTiemposLlegada() {
+
+    for (let i = 0; i < 9; i++) {
+
+        let tLlegada;
+
+        // Generar hasta encontrar uno que no exista
+        do {
+            tLlegada = Math.floor(Math.random() * 15);
+        } while (tiemposLlegada.includes(tLlegada));
+
+        // Guardar tiempo único
+        tiemposLlegada.push(tLlegada);
+    }
+
+}
 
 // Algoritmo first come first serve
-function simularFCFS(){
+function simularFCFS() {
 
     let tiempoActual = 0;
     let terminados = 0;
@@ -43,25 +64,25 @@ function simularFCFS(){
     let historial = [];
 
     // Inicializando tiempo restante y gráfico gannt
-    for(let i = 0; i < procesos.length; i++){
+    for (let i = 0; i < procesos.length; i++) {
 
         procesos[i].restante = procesos[i].tEjecucion;
         gantt[procesos[i].id] = [];
     }
 
-    while(terminados < numProcesos){
+    while (terminados < numProcesos ) {
 
         // Ver quien llega
-        for(let i = 0; i < procesos.length; i++){
-            
-            if(procesos[i].tLlegada == tiempoActual){
+        for (let i = 0; i < procesos.length; i++) {
+
+            if (procesos[i].tLlegada == tiempoActual) {
 
                 cola.push(procesos[i]);
             }
         }
 
         // Toma al primero de la cola
-        if(ejecutando == null && cola.length > 0){
+        if (ejecutando == null && cola.length > 0) {
 
             ejecutando = cola.shift();
             ejecutando.tComienzo = tiempoActual;
@@ -70,7 +91,7 @@ function simularFCFS(){
         // Guardar cola
         let lista = [];
 
-        for(let i = cola.length - 1; i >= 0; i--){
+        for (let i = cola.length - 1; i >= 0; i--) {
 
             lista.push(cola[i].id);
         }
@@ -81,27 +102,27 @@ function simularFCFS(){
         });
 
         // Estados
-        for(let i = 0; i < procesos.length; i++){
+        for (let i = 0; i < procesos.length; i++) {
 
             let estado = "";
 
             // Si el proceso se está ejecutando el estado es E
-            if(ejecutando != null && procesos[i].id == ejecutando.id){
+            if (ejecutando != null && procesos[i].id == ejecutando.id) {
 
                 estado = "E";
             }
-            else{
+            else {
 
-                for(let j = 0; j < cola.length; j++){
+                for (let j = 0; j < cola.length; j++) {
                     // Si el proceso está en la cola el estado es L
-                    if(cola[j].id == procesos[i].id){
+                    if (cola[j].id == procesos[i].id) {
 
                         estado = "L";
                     }
                 }
             }
             // Si el proceso ya terminó el estado es F, despues de la ultima E (ejecución)
-            if(procesos[i].tFin != -1 && procesos[i].tFin + 1 == tiempoActual){
+            if (procesos[i].tFin != -1 && procesos[i].tFin + 1 == tiempoActual) {
 
                 estado = "F";
             }
@@ -110,11 +131,11 @@ function simularFCFS(){
         }
 
         // Ejecuta el proceso
-        if(ejecutando != null){
+        if (ejecutando != null) {
 
             ejecutando.restante--;
 
-            if(ejecutando.restante == 0){
+            if (ejecutando.restante == 0) {
                 // Guarda el tiempo en el que terminó
                 ejecutando.tFin = tiempoActual;
 
@@ -132,30 +153,30 @@ function simularFCFS(){
 }
 
 // Grafico tipo GANTT 
-function renderGantt(gantt, totalTiempo){
+function renderGantt(gantt, totalTiempo) {
 
     let tabla = document.getElementById("gantt-chart");
 
     let texto = "<tr><th>Proceso</th>";
 
-    for(let t = 0; t <= totalTiempo; t++){
+    for (let t = 0; t <= totalTiempo; t++) {
 
         texto += "<th>" + t + "</th>";
     }
 
     texto += "</tr>";
 
-    for(let i = 0; i < nombres.length; i++){
+    for (let i = 0; i < nombres.length; i++) {
 
         texto += "<tr>";
 
         texto += "<td>" + nombres[i] + "</td>";
 
-        for(let t = 0; t <= totalTiempo; t++){
+        for (let t = 0; t <= totalTiempo; t++) {
 
             let estado = "";
 
-            if(gantt[nombres[i]][t] != undefined){
+            if (gantt[nombres[i]][t] != undefined) {
 
                 estado = gantt[nombres[i]][t];
             }
@@ -172,7 +193,7 @@ function renderGantt(gantt, totalTiempo){
 }
 
 // Resultados
-function renderResultados(historial){
+function renderResultados(historial) {
 
     let body = document.getElementById("body-resultados");
 
@@ -181,7 +202,7 @@ function renderResultados(historial){
     let sumaRetorno = 0;
     let sumaEspera = 0;
 
-    for(let i = 0; i < procesos.length; i++){
+    for (let i = 0; i < procesos.length; i++) {
 
         let retorno = procesos[i].tFin - procesos[i].tLlegada + 1;
 
@@ -217,25 +238,25 @@ function renderResultados(historial){
 }
 
 // Cola gráfica
-function renderColaGrafica(historial){
+function renderColaGrafica(historial) {
 
     let container = document.getElementById("cola-container");
 
     let texto = "";
 
-    for(let i = 0; i < historial.length; i++){
+    for (let i = 0; i < historial.length; i++) {
 
         texto += "<div class='cola-instante'>";
 
         texto += "<header>T:" + historial[i].t + "</header>";
 
-        if(historial[i].lista.length == 0){
+        if (historial[i].lista.length == 0) {
 
             texto += "<div>-</div>";
         }
-        else{
+        else {
 
-            for(let j = 0; j < historial[i].lista.length; j++){
+            for (let j = 0; j < historial[i].lista.length; j++) {
 
                 texto += "<div>" + historial[i].lista[j] + "</div>";
             }
@@ -248,11 +269,11 @@ function renderColaGrafica(historial){
 }
 
 // Mostrar tabla inicial
-function renderEntrada(){
+function renderEntrada() {
 
     let texto = "";
 
-    for(let i = 0; i < procesos.length; i++){
+    for (let i = 0; i < procesos.length; i++) {
 
         texto += "<tr>";
         texto += "<td>" + procesos[i].id + "</td>";
