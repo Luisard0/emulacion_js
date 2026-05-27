@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo_Clock</title>
+    <link rel="stylesheet" href="clock_css.css">
+</head>
+
+<body>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+
+    <header class="encabezado_proyecto">
+        <h1 class="titulo_principal">Simulación de Administración de Memoria - Algoritmo Clock</h1>
+        <p class="descripcion_proyeto">Esta es una simulación del algoritmo Clock para la administración de memoria virtual.</p>
+    </header>
+
+    <main class="contenedor-configuracion">
+        <h2 class="subtirulo-seccion">Parámetros de Configuración</h2>
+
+        <div class="grupo-control">
+            <label for="selectFrames" class="etiqueta-control">Número de Marcos (Frames):</label>
+            <select id="selectFrames" class="selector-entrada">
+                <option value="4">4 Frames</option>
+                <option value="8">8 Frames</option>
+            </select>
+        </div>
+
+        <div class="grupo-control">
+            <label for="selectProcesos" class="etiqueta-control">Número de Procesos:</label>
+            <select id="selectProcesos" class="selector-entrada">
+                <option value="8">8 Procesos</option>
+                <option value="16">16 Procesos</option>
+            </select>
+        </div>
+
+        <div class="grupo-control">
+            <label for="inputTiempo" class="etiqueta-control">Tiempo de Simulación (Rango 10 - 70):</label>
+            <input type="number" id="inputTiempo" class="campo-numerico" value="20" min="10" max="70">
+        </div>
+
+        <div class="contenedor-botones">
+            <button onclick="iniciarSimulacionDinamica()" class="boton-accion boton-aleatorio">Ejecutar Simulación Aleatoria</button>
+            <button onclick="iniciarSimulacionExcel()" class="boton-accion boton-excel">Ejecutar Datos Precargados (Excel)</button>
+
+            <button onclick="regresarAlMain()" class="boton-accion boton-regresar">Regresar a Menú Principal</button>
+        </div>
+    </main>
+
+    <section id="seccionResultados" class="contenedor-resultados" style="display: none;">
+        <h2 id="tituloTabla" class="titulo-tabla">Tabla de Resultados del Algoritmo Clock</h2>
+        
+        <p id="textoSecuencia" class="secuencia-datos"></p>
+
+        <div id="boxFallos" class="resumen-fallos"></div>
+
+        <table id="tablaReloj" class="tabla-simulacion">
+            <thead id="cabeceraTabla" class="cabecera-tabla"></thead>
+            <tbody id="cuerpoTabla" class="cuerpo-tabla"></tbody>
+        </table>
+    </section>
+
+    <script src="js_clock.js"></script>
+
+    <script>
+        /**
+         * Toma el historial de pasos y genera dinámicamente las celdas de la tabla HTML
+         */
+        function pintarTablaResultados(resultados, numFrames) {
+            const contenedor = document.getElementById("seccionResultados");
+            const cabecera = document.getElementById("cabeceraTabla");
+            const cuerpo = document.getElementById("cuerpoTabla");
+            const boxFallos = document.getElementById("boxFallos");
+            const textoSecuencia = document.getElementById("textoSecuencia");
+
+            // Hacer visible la sección de resultados removiendo la restricción de pantalla
+            contenedor.style.display = "block";
+            
+            // Colocar los textos informativos superiores
+            textoSecuencia.innerText = "Secuencia de demanda procesada: [ " + resultados.secuencia.join(", ") + " ]";
+            boxFallos.innerText = "TOTAL DE FALLOS DE PÁGINA REGISTRADOS: " + resultados.totalFallos;
+            boxFallos.style.display = "block";
+
+            // 1. Construir dinámicamente los encabezados (th) según los frames seleccionados
+            let htmlCabecera = `<tr class="fila-cabecera"><th class="celda-cabecera">Tiempo</th><th class="celda-cabecera">Demanda</th><th class="celda-cabecera">¿Fallo?</th>`;
+            for (let i = 0; i < numFrames; i++) {
+                htmlCabecera += `<th class="celda-cabecera">F${i+1} [Pág, Bit]</th>`;
+            }
+            htmlCabecera += `</tr>`;
+            cabecera.innerHTML = htmlCabecera;
+
+            // 2. Construir e inyectar las filas del cuerpo de la tabla paso a paso
+            let htmlCuerpo = "";
+            resultados.historial.forEach(paso => {
+                let marcaFallo = paso.fallo !== "" ? `<span class="marca-fallo">X</span>` : "";
+                
+                htmlCuerpo += `<tr class="fila-paso">`;
+                htmlCuerpo += `<td class="celda-datos celda-tiempo">T = ${paso.tiempo}</td>`;
+                htmlCuerpo += `<td class="celda-datos celda-demanda">Pág ${paso.demanda}</td>`;
+                htmlCuerpo += `<td class="celda-datos celda-fallo">${marcaFallo}</td>`;
+
+                // Recorrer el arreglo de marcos de este segundo en particular
+                for (let i = 0; i < numFrames; i++) {
+                    let datosMarco = paso.estadoFrames[i];
+                    let paginaVisual = datosMarco[0] === null ? "-" : datosMarco[0];
+                    let bitVisual = datosMarco[1];
+                    let contenidoCelda = `[ ${paginaVisual}, ${bitVisual} ]`;
+                    
+                    // Si el puntero del reloj se detuvo en este cuadro, añadimos la clase 'celda-puntero'
+                    if (paso.punteroEn === i) {
+                        htmlCuerpo += `<td class="celda-datos celda-marco celda-puntero">${contenidoCelda} *</td>`;
+                    } else {
+                        htmlCuerpo += `<td class="celda-datos celda-marco">${contenidoCelda}</td>`;
+                    }
+                }
+                htmlCuerpo += `</tr>`;
+            });
+            cuerpo.innerHTML = htmlCuerpo;
+        }
+
+        /**
+         * Dispara la lógica recolectando los datos aleatorios del formulario de configuración
+         */
+        function iniciarSimulacionDinamica() {
+            const frames = parseInt(document.getElementById("selectFrames").value);
+            const procesos = parseInt(document.getElementById("selectProcesos").value);
+            const tiempo = parseInt(document.getElementById("inputTiempo").value);
+
+            // Validar límites numéricos obligatorios de la rúbrica (rango de 10 a 70)
+            if (isNaN(tiempo) || tiempo < 10 || tiempo > 70) {
+                alert("[ERROR] El tiempo de simulación debe encontrarse estrictamente entre 10 y 70 unidades.");
+                return;
+            }
+
+            document.getElementById("tituloTabla").innerText = "Tabla Paso a Paso (Simulación Dinámica Aleatoria)";
+            const res = ejecutarSimulacionReloj(frames, procesos, tiempo);
+            pintarTablaResultados(res, frames);
+        }
+
+        /**
+         * Dispara la lógica utilizando los datos estáticos del Excel analizado en clase
+         */
+        function iniciarSimulacionExcel() {
+            const secuenciaExcel = [5, 2, 3, 2, 4, 1, 3, 2, 5, 5, 8, 9, 6, 0, 2, 11, 5, 9, 6, 2];
+            const framesExcel = 4;
+            const procesosExcel = 16;
+
+            document.getElementById("tituloTabla").innerText = "Tabla Paso a Paso (Datos del Ejercicio de Clase)";
+            const res = ejecutarSimulacionReloj(framesExcel, procesosExcel, secuenciaExcel.length, secuenciaExcel);
+            pintarTablaResultados(res, framesExcel);
+        }
+    </script>
+</body>
+</html>

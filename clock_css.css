@@ -1,0 +1,296 @@
+/* Configura el tamaño completo de la pantalla */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Imagen de fondo fija y letra general de la pagina */
+body {
+    background: url(https://i.pinimg.com/originals/44/6e/3b/446e3b79395a287ca32f7977dd83b290.jpg) no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    color: #333333;
+    padding: 30px; 
+    box-sizing: border-box;
+}
+
+/* Configuracion base para las luciernagas animadas */
+.firefly {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 0.4vw;
+    height: 0.4vw;
+    margin: -0.2vw 0 0 9.8vw;
+    animation: ease 200s alternate infinite;
+    pointer-events: none;
+    z-index: 999; 
+}
+
+.firefly::before, .firefly::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform-origin: -10vw;
+}
+
+/* Sombra oscura de la luciernaga */
+.firefly::before {
+    background: black;
+    opacity: 0.4;
+    animation: drift ease alternate infinite;
+}
+
+/* Brillo amarillo de la luciernaga */
+.firefly::after {
+    background: white;
+    opacity: 0;
+    box-shadow: 0 0 0vw 0vw yellow;
+    animation: drift ease alternate infinite, flash ease infinite;
+}
+
+/* Tiempos de movimiento y retraso de la luciernaga 1 */
+.firefly:nth-child(1) { animation-name: move1; }
+.firefly:nth-child(1)::before { animation-duration: 18s; }
+.firefly:nth-child(1)::after { animation-duration: 18s, 5410ms; animation-delay: 0ms, 635ms; }
+
+/* Tiempos de movimiento y retraso de la luciernaga 2 */
+.firefly:nth-child(2) { animation-name: move2; }
+.firefly:nth-child(2)::before { animation-duration: 13s; }
+.firefly:nth-child(2)::after { animation-duration: 13s, 7621ms; animation-delay: 0ms, 452ms; }
+
+/* Tiempos de movimiento y retraso de la luciernaga 3 */
+.firefly:nth-child(3) { animation-name: move3; }
+.firefly:nth-child(3)::before { animation-duration: 15s; }
+.firefly:nth-child(3)::after { animation-duration: 15s, 6420ms; animation-delay: 0ms, 381ms; }
+
+/* Tiempos de movimiento y retraso de la luciernaga 4 */
+.firefly:nth-child(4) { animation-name: move4; }
+.firefly:nth-child(4)::before { animation-duration: 12s; }
+.firefly:nth-child(4)::after { animation-duration: 12s, 8100ms; animation-delay: 0ms, 912ms; }
+
+/* Animacion para que las luciernagas giren */
+@keyframes drift {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animacion para hacer que el brillo amarillo parpadee */
+@keyframes flash {
+    0%, 30%, 100% { opacity: 0; box-shadow: 0 0 0vw 0vw yellow; }
+    5% { opacity: 1; box-shadow: 0 0 2vw 0.4vw yellow; }
+}
+
+/* Ruta de movimiento en la pantalla para la luciernaga 1 */
+@keyframes move1 {
+    0% { transform: translateX(-20vw) translateY(-20vh) scale(0.5); }
+    100% { transform: translateX(20vw) translateY(20vh) scale(0.8); }
+}
+
+/* Ruta de movimiento en la pantalla para la luciernaga 2 */
+@keyframes move2 {
+    0% { transform: translateX(30vw) translateY(-40vh) scale(0.3); }
+    100% { transform: translateX(-30vw) translateY(30vh) scale(0.6); }
+}
+
+/* Ruta de movimiento en la pantalla para la luciernaga 3 */
+@keyframes move3 {
+    0% { transform: translateX(-40vw) translateY(10vh) scale(0.4); }
+    100% { transform: translateX(20vw) translateY(-30vh) scale(0.7); }
+}
+
+/* Ruta de movimiento en la pantalla para la luciernaga 4 */
+@keyframes move4 {
+    0% { transform: translateX(15vw) translateY(35vh) scale(0.5); }
+    100% { transform: translateX(-25vw) translateY(-25vh) scale(0.9); }
+}
+
+/* Caja blanca con transparencia para el titulo principal */
+.encabezado_proyecto {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.9); 
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.titulo_principal {
+    color: #2c3e50;
+    margin: 0 0 5px 0;
+}
+
+.descripcion_proyeto {
+    color: #555555;
+    font-size: 15px;
+    margin: 0;
+}
+
+/* Caja contenedora para las opciones del formulario */
+.contenedor-configuracion {
+    background-color: rgba(255, 255, 255, 0.95); 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.subtirulo-seccion {
+    color: #34495e;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* Alinear los selectores uno al lado del otro */
+.grupo-control {
+    display: inline-block;
+    margin-right: 25px;
+    margin-bottom: 15px;
+}
+
+.etiqueta-control {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #4a5568;
+}
+
+/* Diseño de los menus desplegables y cajas numericas */
+.selector-entrada, 
+.campo-numerico {
+    padding: 8px 12px;
+    width: 180px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #f8fafc;
+}
+
+.contenedor-botones {
+    margin-top: 15px;
+}
+
+/* Estilo base para todos los botones */
+.boton-accion {
+    padding: 10px 20px;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+/* Color azul para el boton aleatorio */
+.boton-aleatorio {
+    background-color: #3498db;
+}
+
+.boton-aleatorio:hover {
+    background-color: #2980b9;
+}
+
+/* Color verde para el boton de datos del Excel */
+.boton-excel {
+    background-color: #2ecc71;
+}
+
+.boton-excel:hover {
+    background-color: #27ae60;
+}
+
+/* Color gris para el boton de regresar al menu */
+.boton-regresar {
+    background-color: #7f8c8d;
+}
+
+.boton-regresar:hover {
+    background-color: #95a5a6;
+}
+
+/* Caja contenedora para la tabla de resultados */
+.contenedor-resultados {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.titulo-tabla {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+/* Cuadro de texto punteado que muestra la secuencia de paginas */
+.secuencia-datos {
+    font-style: italic;
+    color: #4a5568;
+    background-color: #f7fafc;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px dashed #cbd5e0;
+    word-break: break-all;
+}
+
+/* Alerta de color rojo que resalta los fallos totales */
+.resumen-fallos {
+    font-size: 16px;
+    font-weight: bold;
+    color: #c0392b;
+    margin: 15px 0;
+    padding: 12px;
+    background-color: #fff5f5;
+    border-left: 5px solid #e53e3e;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Quitar bordes dobles en las celdas de la tabla */
+.tabla-simulacion {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* Encabezados superiores de la tabla en azul oscuro */
+.celda-cabecera {
+    background-color: #2c3e50;
+    color: #ffffff;
+    padding: 12px;
+    font-weight: bold;
+    border: 1px solid #1a252f;
+}
+
+/* Celdas con los valores de las paginas y bits */
+.celda-datos {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+/* Alterna el color de fondo en las filas pares para leer mejor */
+.fila-paso:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+/* Color rojo para marcar la letra X cuando hay un fallo */
+.marca-fallo {
+    color: #e53e3e;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Resalta en color amarillo la celda donde se encuentra el puntero */
+.celda-puntero {
+    background-color: #fef3c7 !important;
+    color: #d97706;
+    border: 2px solid #f59e0b !important;
+    font-weight: bold;
+}
