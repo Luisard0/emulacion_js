@@ -8,95 +8,102 @@
 /**
  * Lógica del Algoritmo Clock (Segunda Oportunidad) para Gestión de Memoria
  */
+// Función principal para correr el algoritmo de reemplazo de páginas Clock
 function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenciaDemanda = null) {
 
-    // 1. Crear la secuencia de páginas si el usuario no metió una predeterminada
+    // Si el usuario no mandó una secuencia fija desde el Excel, creamos una aleatoria
     if (secuenciaDemanda == null) {
         secuenciaDemanda = [];
         for (let i = 0; i < duracionTiempo; i++) {
-            // Genera números aleatorios desde 0 hasta la cantidad de procesos - 1
+            // Elige una página al azar desde 0 hasta el límite de procesos menos 1
             let paginaAleatoria = Math.floor(Math.random() * numProcesos);
             secuenciaDemanda.push(paginaAleatoria);
         }
     } else {
-        // Si usamos el Excel precargado, el tiempo se adapta al tamaño de la lista
+        // Si usamos los datos precargados, el tiempo se adapta al tamaño de la lista
         duracionTiempo = secuenciaDemanda.length;
     }
 
-    // 2. Crear los marcos de memoria (Frames) vacíos
-    // Cada marco será un arreglo simple con dos datos: [Página, Bit]
+    // Creamos los marcos de memoria inicialmente vacíos
+    // Cada posición adentro va a guardar: [Número de Página, Bit de Uso]
     let frames = [];
     for (let i = 0; i < numFrames; i++) {
-        frames.push([null, 0]); // null significa que el espacio está vacío
+        frames.push([null, 0]); // Iniciamos con null (vacío) y el bit en 0
     }
 
-    let puntero = 0; // Apuntador del reloj que inicia en el índice 0 (Frame 1)
-    let totalFallos = 0;
-    let historialPasos = [];
+    let puntero = 0; // La manecilla del reloj que inicia en el Frame 1 (índice 0)
+    let totalFallos = 0; // Contador total de fallos de página
+    let historialPasos = []; // Lista para guardar los resultados de cada segundo
 
-    // 3. Empezar la simulación segundo a segundo
+    // Empezamos a recorrer la lista de demandas paso a paso
     for (let t = 0; t < duracionTiempo; t++) {
-        let paginaSolicitada = secuenciaDemanda[t]; // Página que se necesita en este segundo
-        let huboFallo = false;
+        let paginaSolicitada = secuenciaDemanda[t]; // La página que se pide en este instante
+        let huboFallo = false; // Bandera para saber si se activa el fallo o no
 
-        // Comprobar si la página ya está en la memoria RAM (Acierto / Hit)
+        // 1. Revisamos si la página ya está cargada en la memoria (Acierto / Hit)
         let encontrado = false;
         for (let i = 0; i < numFrames; i++) {
             if (frames[i][0] == paginaSolicitada) {
-                frames[i][1] = 1; // Le damos una segunda oportunidad poniendo su bit en 1
+                frames[i][1] = 1; // Si ya estaba, se activa o mantiene su bit de uso en 1
                 encontrado = true;
-                break; // Detener la búsqueda porque ya se encontró
+                break; // Cerramos el ciclo porque ya sabemos que sí está
             }
         }
 
-        // Si la página NO se encontró, ocurre un Fallo de Página y se aplica el reloj
+        // 2. Si la página NO estaba en los marcos, ocurre un Fallo de Página
         if (encontrado == false) {
             huboFallo = true;
-            totalFallos = totalFallos + 1;
+            totalFallos = totalFallos + 1; // Sumamos un fallo al total
 
-            // Bucle para mover la manecilla del reloj hasta encontrar un espacio
+            // Ciclo para mover la manecilla del reloj y buscar un lugar según el Excel de clase
             while (true) {
                 let paginaActual = frames[puntero][0];
                 let bitUso = frames[puntero][1];
 
-                // CASO 1: Si el cuadro está vacío o su bit de uso es 0, lo reemplazamos
-                if (paginaActual == null || bitUso == 0) {
-                    frames[puntero][0] = paginaSolicitada; // Colocamos la nueva página
-                    frames[puntero][1] = 1; // Su bit inicia activado en 1
-
-                    // Avanzar el puntero circularmente a la siguiente posición
-                    puntero = (puntero + 1) % numFrames;
-                    break; // Romper el ciclo de búsqueda porque ya se alojó la página
+                // CASO A: Si el marco está completamente vacío, la página entra directo
+                // El puntero no avanza, se queda parado en este mismo marco que se llenó
+                if (paginaActual == null) {
+                    frames[puntero][0] = paginaSolicitada;
+                    frames[puntero][1] = 1; // Su bit inicia en 1
+                    break; // Rompemos el while porque ya se acomodó la página
                 }
-                // CASO 2: Si el bit es 1, pierde su oportunidad, baja a 0 y avanza la manecilla
+
+                // CASO B: Si el marco está lleno pero su bit es 0, se reemplaza la página vieja
+                // El puntero tampoco avanza aquí, se queda quieto apuntando al cambio
+                else if (bitUso == 0) {
+                    frames[puntero][0] = paginaSolicitada;
+                    frames[puntero][1] = 1; // Inicia en 1 de nuevo
+                    break; // Rompemos el while porque el reemplazo terminó
+                }
+
+                // CASO C: Si el marco está lleno y su bit es 1, pierde su oportunidad
+                // El bit baja a 0 y la manecilla avanza al siguiente marco de forma circular
                 else {
-                    frames[puntero][1] = 0; // El bit de presencia baja a 0
-                    puntero = (puntero + 1) % numFrames; // Avanzar circularmente
+                    frames[puntero][1] = 0; // Baja el bit a 0
+                    puntero = (puntero + 1) % numFrames; // Avanza usando el residuo matemático
                 }
             }
         }
 
-        // 4. Clonar el estado de los marcos en este segundo de tiempo
-        // Esto evita que los cambios futuros borren los datos de los segundos pasados
+        // 3. Clonamos el estado de los marcos en este segundo para la tabla
+        // Esto evita que los cambios de los siguientes segundos borren el pasado
         let copiaMarcos = [];
         for (let i = 0; i < numFrames; i++) {
             copiaMarcos.push([frames[i][0], frames[i][1]]);
         }
 
-        // Calcular en qué marco exacto se detuvo el apuntador físico
-        let marcoApuntador = (puntero - 1 + numFrames) % numFrames;
-
-        // Guardar todos los detalles de este paso para poder pintar la tabla al final
+        // 4. Guardamos los datos de este paso para mandarlos al HTML
+        // Si hubo fallo, el asterisco '*' se va a pintar exactamente en el marco donde paró el puntero
         historialPasos.push({
             tiempo: t + 1,
             demanda: paginaSolicitada,
             fallo: huboFallo ? "X" : "",
             estadoFrames: copiaMarcos,
-            punteroEn: huboFallo ? marcoApuntador : -1 // Si no hubo fallo, el puntero no se mueve gráficamente
+            punteroEn: huboFallo ? puntero : -1 // Si no hubo fallo se guarda -1 para no pintar asterisco
         });
     }
 
-    // 5. Devolver los resultados estructurados listos para el HTML
+    // Regresamos el objeto con todos los resultados estructurados
     return {
         totalFallos: totalFallos,
         secuencia: secuenciaDemanda,
@@ -104,7 +111,7 @@ function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenc
     };
 }
 
+// Función sencilla para redirigir al usuario al menú principal del proyecto
 function regresarAlMain() {
-    // Redirige al usuario a la página principal del proyecto
     window.location.href = "index.html";
 }
