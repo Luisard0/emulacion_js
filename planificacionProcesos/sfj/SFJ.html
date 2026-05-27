@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planificador de Procesos: SJF</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="SFJ.css">
+</head>
+<body>
+
+<div class="page-title">Planificador de Procesos: <span>SJF</span></div>
+
+<div class="block">
+  <div class="sec-head">1. Datos de Entrada</div>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runSJF()">&#9654; Ejecutar SJF</button>
+    <button class="btn btn-rnd" onclick="randomize()">&#8635; Aleatorizar</button>
+    <button class="btn btn-def" onclick="loadDefault()">&#10571; Ejemplo</button>
+  </div>
+  <div class="input-table-wrap">
+    <table class="input-table">
+      <thead>
+        <tr>
+          <th>Proceso</th>
+          <th>T. Ejecucion</th>
+          <th>T. Llegada</th>
+        </tr>
+      </thead>
+      <tbody id="input-tbody"></tbody>
+    </table>
+  </div>
+  <div class="status" id="status">Listo. Edita los datos y presiona Ejecutar SJF.</div>
+</div>
+
+<div id="gantt-block" class="block hidden">
+  <div class="sec-head">2. Medio Grafico</div>
+  <div class="legend">
+    <div class="legend-item"><div class="leg-cell lc-l">L</div> Listo</div>
+    <div class="legend-item"><div class="leg-cell lc-e">E</div> Ejecucion</div>
+    <div class="legend-item"><div class="leg-cell lc-f">F</div> Finalizado</div>
+  </div>
+  <div class="gantt-outer">
+    <table class="gantt-table" id="gantt-table"></table>
+  </div>
+</div>
+
+<div id="results-block" class="block hidden">
+  <div class="sec-head">3. Tabla de Resultados</div>
+  <div style="overflow-x:auto">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Proceso</th>
+          <th>T. Llegada</th>
+          <th>T. Ejecucion</th>
+          <th>T. Inicio</th>
+          <th>T. Fin</th>
+          <th>T. Retorno</th>
+          <th>T. Espera</th>
+        </tr>
+      </thead>
+      <tbody id="results-tbody"></tbody>
+      <tfoot id="results-tfoot"></tfoot>
+    </table>
+  </div>
+</div>
+
+<div id="cmp-block" class="block hidden">
+  <div class="sec-head">4. Tabla Comparativa: SJF vs FCFS</div>
+  <div style="overflow-x:auto">
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th>Metrica</th>
+          <th>SJF</th>
+          <th>FCFS</th>
+          <th>Diferencia</th>
+          <th>Resultado</th>
+        </tr>
+      </thead>
+      <tbody id="cmp-tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="SFJ.js"></script>
+</body>
+</html>
