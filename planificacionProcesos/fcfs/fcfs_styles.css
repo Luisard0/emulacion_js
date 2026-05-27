@@ -1,0 +1,14 @@
+/* Hola mundo  */
+
+body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
+table { border-collapse: collapse; margin-bottom: 20px; background: white; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+
+/* Estados del Gráfico */
+.estado-E { background-color: #99ff99; font-weight: bold; } /* Ejecución */
+.estado-L { background-color: #ffff99; font-weight: bold; } /* Espera/Listo */
+.estado-F { background-color: #ff9999; font-weight: bold; } /* Finalización */
+
+.gantt-container { overflow-x: auto; max-width: 100%; }
+.cola-instante { display: inline-block; border: 1px solid #444; margin: 2px; vertical-align: top; font-size: 0.8em; }
+.cola-instante header { background: #ddd; padding: 2px; }

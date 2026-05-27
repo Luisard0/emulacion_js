@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Planificación CPU - FCFS</title>
+    <link rel="stylesheet" href="fcfs_styles.css">
+</head>
+<body>
+    <h1>Planificador de Procesos: FCFS</h1>
+
+    <section>
+        <h2>1. Datos de Entrada (Procesos Aleatorios)</h2>
+        <table id="tabla-entrada">
+            <thead>
+                <tr>
+                    <th>Proceso</th>
+                    <th>T. Ejecución</th>
+                    <th>T. Llegada</th>
+                </tr>
+            </thead>
+            <tbody id="body-entrada"></tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>2. Medio Gráfico (Diagrama de Gantt)</h2>
+        <div class="gantt-container">
+            <table id="gantt-chart">
+                </table>
+        </div>
+    </section>
+
+    <section>
+        <h2>3. Cola de Espera por Instante</h2>
+        <div id="cola-container"></div>
+    </section>
+
+    <section>
+        <h2>4. Resultados FCFS</h2>
+        <table id="tabla-resultados">
+            <thead>
+                <tr>
+                    <th>Proceso</th>
+                    <th>T. Comienzo</th>
+                    <th>T. Fin</th>
+                    <th>T. Retorno</th>
+                    <th>T. Espera</th>
+                </tr>
+            </thead>
+            <tbody id="body-resultados"></tbody>
+        </table>
+        <div id="promedios-fcfs"></div>
+    </section>
+
+    <section>
+        <h2>5. Comparativa de Algoritmos</h2>
+        <table id="tabla-comparativa">
+            <thead>
+                <tr>
+                    <th>Algoritmo</th>
+                    <th>T. Medio Retorno</th>
+                    <th>T. Medio Espera</th>
+                    <th>Comportamiento</th>
+                </tr>
+            </thead>
+            <tbody id="body-comparativa"></tbody>
+        </table>
+    </section>
+
+    <script src="fcfs.js"></script>
+</body>
+</html>
