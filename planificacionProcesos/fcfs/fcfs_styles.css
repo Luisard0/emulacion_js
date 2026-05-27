@@ -1,0 +1,146 @@
+:root {
+    --matcha: #8FB78F;   /* Estado E */
+    --pistachio: #CBE6C7; 
+    --azure: #B4CCCF;    /* Estado L */
+    --indigo: #2B536B;   /* Acentos / Encabezados */
+    --pink: #F7A8B8;     /* Estado F  */
+    --peach: #FFCC99;    /* Detalles */
+    --bg: #FDFDFD;
+    --black: #000000;
+    --border-width: 3px;
+}
+
+body {
+    font-family: "Courier New", Courier, monospace;
+    background-color: var(--bg);
+    color: var(--black);
+    padding: 40px 20px;
+}
+
+h1, h2 {
+    text-transform: uppercase;
+    background: var(--pistachio);
+    display: inline-block;
+    padding: 10px 20px;
+    border: var(--border-width) solid var(--black);
+    box-shadow: 8px 8px 0px var(--black);
+    margin-bottom: 30px;
+}
+
+/* --- Botones --- */
+button {
+    font-family: inherit;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 15px 30px;
+    cursor: pointer;
+    background: var(--peach);
+    border: var(--border-width) solid var(--black);
+    box-shadow: 5px 5px 0px var(--black);
+    margin-right: 15px;
+    transition: all 0.1s ease;
+}
+
+button:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0px var(--black);
+    background: var(--azure);
+}
+
+button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--black);
+}
+
+/* --- Tablas --- */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 25px;
+    border: var(--border-width) solid var(--black);
+    box-shadow: 10px 10px 0px var(--black);
+    background: white;
+}
+
+th, td {
+    border: var(--border-width) solid var(--black);
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+thead {
+    background-color: var(--azure);
+}
+
+/* --- Lógica de Colores para Estados --- */
+.estado-E { 
+    background-color: var(--matcha) !important; 
+    color: black;
+}
+
+.estado-L { 
+    background-color: var(--azure) !important; 
+    color: black;
+}
+
+.estado-F { 
+    background-color: var(--pink) !important; 
+    color: black;
+}
+
+/* --- Gantt Chart --- */
+.gantt-container {
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
+
+#gantt-chart th {
+    background: var(--pistachio);
+}
+
+/* --- Cola por Instante --- */
+#cola-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.cola-instante {
+    background: white;
+    border: var(--border-width) solid var(--black);
+    box-shadow: 4px 4px 0px var(--black);
+}
+
+.cola-instante header {
+    background: var(--indigo);
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+
+.cola-instante div {
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    background-color: white;
+}
+
+/* --- Resultados y Comparativa --- */
+#promedios-fcfs {
+    font-size: 1.1em;
+    border: var(--border-width) dashed var(--indigo);
+    padding: 15px;
+    display: inline-block;
+    background: var(--pistachio);
+    margin-top: 10px;
+}
+
+#seccion-comparativa table {
+    box-shadow: 10px 10px 0px var(--indigo);
+}
+
+#seccion-comparativa th {
+    background-color: var(--indigo);
+    color: white;
+}
