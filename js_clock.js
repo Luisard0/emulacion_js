@@ -9,7 +9,7 @@
  * Lógica del Algoritmo Clock (Segunda Oportunidad) para Gestión de Memoria
  */
 function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenciaDemanda = null) {
-    
+
     // 1. Crear la secuencia de páginas si el usuario no metió una predeterminada
     if (secuenciaDemanda == null) {
         secuenciaDemanda = [];
@@ -21,8 +21,8 @@ function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenc
     } else {
         // Si usamos el Excel precargado, el tiempo se adapta al tamaño de la lista
         duracionTiempo = secuenciaDemanda.length;
-    }   
-    
+    }
+
     // 2. Crear los marcos de memoria (Frames) vacíos
     // Cada marco será un arreglo simple con dos datos: [Página, Bit]
     let frames = [];
@@ -63,11 +63,11 @@ function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenc
                 if (paginaActual == null || bitUso == 0) {
                     frames[puntero][0] = paginaSolicitada; // Colocamos la nueva página
                     frames[puntero][1] = 1; // Su bit inicia activado en 1
-                    
+
                     // Avanzar el puntero circularmente a la siguiente posición
                     puntero = (puntero + 1) % numFrames;
                     break; // Romper el ciclo de búsqueda porque ya se alojó la página
-                } 
+                }
                 // CASO 2: Si el bit es 1, pierde su oportunidad, baja a 0 y avanza la manecilla
                 else {
                     frames[puntero][1] = 0; // El bit de presencia baja a 0
@@ -102,4 +102,9 @@ function ejecutarSimulacionReloj(numFrames, numProcesos, duracionTiempo, secuenc
         secuencia: secuenciaDemanda,
         historial: historialPasos
     };
+}
+
+function regresarAlMain() {
+    // Redirige al usuario a la página principal del proyecto
+    window.location.href = "index.html";
 }
