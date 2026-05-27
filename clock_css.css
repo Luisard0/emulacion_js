@@ -1,0 +1,183 @@
+/* Color gris claro de fondo para la página y letra normal */
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background-color: #f4f6f9;
+    color: #333333;
+}
+
+/* Centrar los textos del título de la escuela y ponerle línea abajo */
+.encabezado_proyecto {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* Color azul oscuro para el título principal */
+.titulo_principal {
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.descripcion_proyeto {
+    color: #555555;
+    font-size: 15px;
+}
+
+/* Caja blanca para encerrar los selectores y ponerles sombra */
+.contenedor-configuracion {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.subtirulo-seccion {
+    color: #34495e;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* Alinear los selectores uno al lado del otro */
+.grupo-control {
+    display: inline-block;
+    margin-right: 25px;
+    margin-bottom: 15px;
+}
+
+/* Estilo para los nombres de los campos arriba de las opciones */
+.etiqueta-control {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #4a5568;
+}
+
+/* Diseño para las cajas de selección y de números */
+.selector-entrada, 
+.campo-numerico {
+    padding: 8px 12px;
+    width: 180px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #f8fafc;
+}
+
+.contenedor-botones {
+    margin-top: 15px;
+}
+
+/* Estilo general para los dos botones de ejecución */
+.boton-accion {
+    padding: 10px 20px;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+/* Color azul para el botón de simulación aleatoria */
+.boton-aleatorio {
+    background-color: #3498db;
+}
+
+.boton-aleatorio:hover {
+    background-color: #2980b9;
+}
+
+/* Color verde para el botón del ejercicio del Excel */
+.boton-excel {
+    background-color: #2ecc71;
+}
+
+.boton-excel:hover {
+    background-color: #27ae60;
+}
+
+/* Caja blanca para envolver la tabla y los resultados */
+.contenedor-resultados {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.titulo-tabla {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+/* Poner la lista de demandas con letra italica dentro de un cuadro punteado */
+.secuencia-datos {
+    font-style: italic;
+    color: #4a5568;
+    background-color: #f7fafc;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px dashed #cbd5e0;
+    word-break: break-all;
+}
+
+/* Caja roja de alerta para resaltar el total de fallos de página */
+.resumen-fallos {
+    font-size: 16px;
+    font-weight: bold;
+    color: #c0392b;
+    margin: 15px 0;
+    padding: 12px;
+    background-color: #fff5f5;
+    border-left: 5px solid #e53e3e;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Quitar los bordes dobles de la tabla para que se vea uniforme */
+.tabla-simulacion {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* Encabezados de la tabla de color azul oscuro y letras blancas */
+.celda-cabecera {
+    background-color: #2c3e50;
+    color: #ffffff;
+    padding: 12px;
+    font-weight: bold;
+    border: 1px solid #1a252f;
+}
+
+/* Bordes gris claro para separar las celdas de los datos */
+.celda-datos {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+/* Colorear las filas pares de gris claro para el efecto cebra */
+.fila-paso:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+/* Pintar las letras X de color rojo fuerte cuando hay fallo */
+.marca-fallo {
+    color: #e53e3e;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* RESALTADO DEL PUNTERO: Pinta de amarillo brillante la celda donde está el asterisco */
+.celda-puntero {
+    background-color: #fef3c7 !important;
+    color: #d97706;
+    border: 2px solid #f59e0b !important;
+    font-weight: bold;
+}
