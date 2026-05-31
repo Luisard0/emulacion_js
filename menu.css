@@ -1,0 +1,176 @@
+/* ===== VARIABLES ===== */
+:root {
+    --bg: #0f172a;
+    --bg-soft: #1e293b;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+}
+
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Urbanist', sans-serif;
+
+    background:
+        linear-gradient(135deg, #0f172a, #1e293b),
+        radial-gradient(circle at top left, #1e293b, transparent 50%),
+        radial-gradient(circle at bottom right, #111827, transparent 50%);
+
+    color: var(--text);
+
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===== CONTENEDOR ===== */
+.container {
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+}
+
+/* ===== HEADER ===== */
+.header {
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.header p {
+    color: var(--muted);
+    margin-top: 6px;
+    font-size: 16px;
+}
+
+/* ===== GRID (2x2 PERFECTO) ===== */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* ===== CARD BASE ===== */
+.card {
+    height: 180px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    padding: 20px;
+    border-radius: 18px;
+
+    text-decoration: none;
+    color: var(--text);
+
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+
+    border: 1px solid var(--border);
+
+    transition: all 0.25s ease;
+
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== EFECTO DE LUZ SUAVE ===== */
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.10),
+        transparent 40%
+    );
+
+    opacity: 0;
+    transition: 0.3s;
+}
+
+/* ===== HOVER ===== */
+.card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255,255,255,0.2);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.35);
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+/* ===== TEXTOS ===== */
+.card h2 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.card p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 5px;
+}
+
+/* ===== VARIACIONES DE COLOR (SUAVES) ===== */
+.card:nth-child(1) {
+    background: linear-gradient(
+        135deg,
+        rgba(59,130,246,0.18),
+        rgba(255,255,255,0.05)
+    );
+}
+
+.card:nth-child(2) {
+    background: linear-gradient(
+        135deg,
+        rgba(16,185,129,0.18),
+        rgba(255,255,255,0.05)
+    );
+}
+
+.card:nth-child(3) {
+    background: linear-gradient(
+        135deg,
+        rgba(234,179,8,0.18),
+        rgba(255,255,255,0.05)
+    );
+}
+
+.card:nth-child(4) {
+    background: linear-gradient(
+        135deg,
+        rgba(236,72,153,0.18),
+        rgba(255,255,255,0.05)
+    );
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        height: 150px;
+    }
+
+    .header h1 {
+        font-size: 36px;
+    }
+}
