@@ -1,11 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emulacion</title>
+    <title>Simulador OS</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="menu.css">
 </head>
 <body>
-    <h1>Emulacion</h1>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Simulador OS</h1>
+        <p>Selecciona un algoritmo</p>
+    </div>
+
+    <div class="bento-grid">
+
+        <a href="remplazoPaginas/optimo/optimo.html" class="card" target="_blank">
+            <h2>Óptimo</h2>
+            <p>Reemplazo ideal de páginas</p>
+        </a>
+
+        <a href="remplazoPaginas/clock/clock.html" class="card" target="_blank">
+            <h2>Clock</h2>
+            <p>Aproximación LRU</p>
+        </a>
+
+        <a href="planificacionProcesos/fcfs/fcfs.html" class="card" target="_blank">
+            <h2>FCFS</h2>
+            <p>First Come First Served</p>
+        </a>
+
+        <a href="planificacionProcesos/sfj/SFJ.html" class="card" target="_blank">
+            <h2>SJF</h2>
+            <p>Shortest Job First</p>
+        </a>
+
+    </div>
+
+</div>
+
 </body>
 </html>
