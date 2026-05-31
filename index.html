@@ -1,12 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emulacion</title>
+    <title>Simulador de Sistemas Operativos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Emulacion</h1>
+
+    <nav id="nav-menu" class="nav-menu"></nav>
+
+    <section class="slide-container active" id="slide-inicio">
+        <div class="content-area align-center">
+            <p class="subtitle">ESTADO DEL SISTEMA: ACTIVO</p>
+            <h1>¡BIENVENIDO!</h1>
+            <p class="hero-text">Explora la eficiencia de algoritmos críticos en la gestión de memoria y planificación de procesos.</p>
+            <button class="btn-ui" onclick="navegarA('slide-modulos')">INICIAR</button>
+        </div>
+    </section>
+
+    <section class="slide-container" id="slide-modulos">
+        <h2 class="slide-title">CLASIFICACIÓN DE SISTEMAS</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="tile" onclick="navegarA('slide-memoria')" style="cursor:pointer;">
+                    <div class="icon"><i class="fa-solid fa-memory"></i></div>
+                    <h3>GESTIÓN DE MEMORIA</h3>
+                    <p>Algoritmos de reemplazo de páginas para optimizar el uso de frames.</p>
+                </div>
+                <div class="tile" onclick="navegarA('slide-cpu')" style="cursor:pointer;">
+                    <div class="icon"><i class="fa-solid fa-microchip"></i></div>
+                    <h3>PLANIFICACIÓN CPU</h3>
+                    <p>Estrategias de asignación de ráfagas para maximizar el throughput.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide-container" id="slide-memoria">
+        <div class="content-area align-center">
+            <p class="subtitle">MÓDULO DE MEMORIA VIRTUAL</p>
+            <h2 class="header-large">MÉTODOS DE PAGINACIÓN</h2>
+            
+            <div style="background: rgba(255, 234, 0, 0.05); padding: 20px; border-radius: 8px; border: 1px solid var(--primary); margin-bottom: 30px; display: flex; gap: 30px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <label style="color: var(--primary); font-family: 'Space Mono', monospace; font-size: 14px; margin-right: 10px;">FRAMES:</label>
+                    <select id="mem-frames" style="background: #000; color: #fff; border: 1px solid #333; padding: 8px; font-family: 'Space Mono', monospace;">
+                        <option value="4">4 Frames</option>
+                        <option value="8">8 Frames</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color: var(--primary); font-family: 'Space Mono', monospace; font-size: 14px; margin-right: 10px;">PROCESOS:</label>
+                    <select id="mem-procesos" style="background: #000; color: #fff; border: 1px solid #333; padding: 8px; font-family: 'Space Mono', monospace;">
+                        <option value="8">8 Procesos</option>
+                        <option value="16">16 Procesos</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color: var(--primary); font-family: 'Space Mono', monospace; font-size: 14px; margin-right: 10px;">TIEMPO (10-70):</label>
+                    <input type="number" id="mem-tiempo" value="20" min="10" max="70" style="background: #000; color: #fff; border: 1px solid #333; padding: 8px; width: 70px; font-family: 'Space Mono', monospace;">
+                </div>
+            </div>
+
+            <div class="action-grid" style="margin-top: 0;">
+                <div class="action-card">
+                    <h3 class="color-primary">ALGORITMO ÓPTIMO</h3>
+                    <p>Sustituye la página que no se usará por más tiempo en el futuro.</p>
+                    <button class="btn-ui btn-small" id="btn-ejecutar-optimo">SIMULACIÓN ALEATORIA</button>
+                </div>
+                <div class="action-card border-secondary">
+                    <h3 class="color-secondary">ALGORITMO CLOCK</h3>
+                    <p>Aproximación LRU mediante una lista circular y bit de referencia.</p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="btn-ui btn-small btn-outline-secondary" id="btn-ejecutar-clock-aleatorio" style="font-size: 12px; padding: 10px;">ALEATORIO</button>
+                        <button class="btn-ui btn-small btn-outline-secondary" id="btn-ejecutar-clock-excel" style="font-size: 12px; padding: 10px;">DATOS EXCEL</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-ui outline" onclick="navegarA('slide-modulos')" style="margin-top: 30px;">VOLVER</button>
+        </div>
+    </section>
+
+    <section class="slide-container" id="slide-cpu">
+        <div class="content-area align-center">
+            <p class="subtitle">MÓDULO DE PROCESOS</p>
+            <h2 class="header-large">PLANIFICACIÓN CPU</h2>
+            <div class="action-grid">
+                <div class="action-card">
+                    <h3 class="color-primary">FCFS</h3>
+                    <p>Atención por orden de llegada. Simple y equitativo.</p>
+                    <button class="btn-ui btn-small" id="btn-ejecutar-fcfs">SELECCIONAR</button>
+                </div>
+                <div class="action-card border-secondary">
+                    <h3 class="color-secondary">SJF</h3>
+                    <p>Prioriza el trabajo más corto para reducir el tiempo de espera.</p>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                        <button class="btn-ui btn-small btn-outline-secondary" id="btn-ejecutar-sjf-aleatorio" style="font-size: 12px; padding: 10px;">ALEATORIO</button>
+                        <button class="btn-ui btn-small btn-outline-secondary" id="btn-ejecutar-sjf-ejemplo" style="font-size: 12px; padding: 10px;">EJEMPLO</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-ui outline" onclick="navegarA('slide-modulos')" style="margin-top: 40px;">VOLVER</button>
+        </div>
+    </section>
+
+    <div id="modal-resultados" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-titulo" class="color-primary">RESULTADOS</h2>
+                <button class="btn-cerrar" onclick="cerrarModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="modal-cuerpo" class="modal-body" style="overflow-x: auto;">
+                </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
-
